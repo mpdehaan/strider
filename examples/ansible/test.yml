@@ -1,0 +1,4 @@
+---
+- hosts: localhost
+  tasks:
+    - apt: name=tree state=installed
