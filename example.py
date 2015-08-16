@@ -7,9 +7,6 @@ from strider.virt.ec2 import EC2
 from strider.provisioners.ansible_ssh import AnsibleSSH
 import os
 
-print os.environ["AWS_ACCESS_KEY"]
-print os.environ["AWS_SECRET_KEY"]
-
 my_instance = EC2(
     name                   = "strider-test-3",
     region                 = "us-east-1",
