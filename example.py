@@ -47,8 +47,8 @@ instances = [ my_instance ]
 strider = Strider(provisioner=provisioner)
 
 # EITHER OF THESE ARE IMPLEMENTED!
-#strider.up(instances)
-strider.provision(instances)
+strider.up(instances)
+# strider.provision(instances)
 
 # TODO:
 #strider.list(instances)
