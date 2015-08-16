@@ -19,7 +19,9 @@ EARLY
 Toy implementation, not finished.  Unless you're a developer interested in this, you probably shouldn't use it.
 AWS code may have eventual consistency errors or instance state related buglets.
 Ansible provisioner probably doesn't allow input of all the flags you want.
+Ansilbe provisioner is really a generic shell provisioner, so make it one.
 Missing CLI.
+Need to add the trivial "strider ssh" command too for quickly firing up a shell.
 
 GOT PLUGINS?
 ============
