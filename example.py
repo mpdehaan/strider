@@ -10,8 +10,8 @@ import os
 my_instance = EC2(
     name                   = "strider-test-3",
     region                 = "us-east-1",
-    access_key_id          = os.environ["AWS_ACCESS_KEY"],
-    secret_access_key      = os.environ["AWS_SECRET_KEY"],
+    access_key_id          = os.environ["AWS_ACCESS_KEY_ID"],
+    secret_access_key      = os.environ["AWS_SECRET_ACCESS_KEY"],
     session_token          = os.environ.get("AWS_SESSION_TOKEN"),
     user_data              = None,
     image_id               = "ami-a7e145cc", # Ubuntu 14.04 us-east1 EBS
