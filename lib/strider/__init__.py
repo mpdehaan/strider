@@ -18,7 +18,7 @@ class Strider(object):
         return [ self.provisioner.converge(x.describe()) for x in instances ]
 
     def destroy(self, instances):
-        return [ self.destroy(x) for x in instances ]
+        return [ x.destroy() for x in instances ]
 
     def cli(self, instances):
         parser = argparse.ArgumentParser(description="Dev VM Manager, expects one of the following flags:")
