@@ -17,7 +17,7 @@ class EC2(object):
 
     __SLOTS__ = [ 'name', 'region', 'access_key_id', 'secret_access_key', 'security_token',
                   'image_id', 'instance_type', 'key_name', 'security_groups', 'subnet_id',
-                  'ssh', 'user_data', 'tags', "_connection" ]
+                  'ssh', 'user_data', 'tags', 'instance_profile_name', "_connection" ]
 
     def __init__(self, **kwargs):
         if not HAS_BOTO:
@@ -151,6 +151,7 @@ class EC2(object):
                 addressing_type = None,
                 subnet_id = self.subnet_id,
                 instance_type = self.instance_type,
+                instance_profile_name = self.instance_profile_name,
                 security_group_ids = self.security_groups
             )
             log("EC2: instance created")

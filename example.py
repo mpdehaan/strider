@@ -8,24 +8,25 @@ from strider.provisioners.ansible_ssh import AnsibleSSH
 import os
 
 my_instance = EC2(
-    name                   = "strider-test-3",
-    region                 = "us-east-1",
-    access_key_id          = os.environ["AWS_ACCESS_KEY_ID"],
-    secret_access_key      = os.environ["AWS_SECRET_ACCESS_KEY"],
-    # security_token       = os.environ.get("AWS_SESSION_TOKEN"),
-    user_data              = None,
-    image_id               = "ami-a7e145cc", # Ubuntu 14.04 us-east1 EBS
-    instance_type          = "m3.medium",
-    key_name               = os.environ["AWS_KEYPAIR"],
-    # subnet_id            = "foo",
+    name                      = "strider-test-3",
+    region                    = "us-east-1",
+    access_key_id             = os.environ["AWS_ACCESS_KEY_ID"],
+    secret_access_key         = os.environ["AWS_SECRET_ACCESS_KEY"],
+    instance_profile_name     = "default",
+    # security_token          = os.environ.get("AWS_SESSION_TOKEN"),
+    user_data                 = None,
+    image_id                  = "ami-a7e145cc", # Ubuntu 14.04 us-east1 EBS
+    instance_type             = "m3.medium",
+    key_name                  = os.environ["AWS_KEYPAIR"],
+    # subnet_id               = "foo",
     tags  = dict(
       role = "foo-test"
     ),
-    security_groups        = [ os.environ["AWS_SECURITY_GROUP"] ],
+    security_groups           = [ os.environ["AWS_SECURITY_GROUP"] ],
     ssh = dict(
-      public_ip        = True,
-      username         = "ubuntu",
-      private_key_path =  os.environ.get("AWS_PEM_FILE")
+      public_ip               = True,
+      username                = "ubuntu",
+      private_key_path        =  os.environ.get("AWS_PEM_FILE")
     )
 )
 
