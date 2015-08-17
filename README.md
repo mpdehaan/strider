@@ -16,12 +16,15 @@ STATUS
 
 EARLY
 
-Toy implementation, not finished.  Unless you're a developer interested in this, you probably shouldn't use it.
-AWS code may have eventual consistency errors or instance state related buglets.
-Ansible provisioner probably doesn't allow input of all the flags you want.
-Ansilbe provisioner is really a generic shell provisioner, so make it one.
-Missing CLI.
-Need to add the trivial "strider ssh" command too for quickly firing up a shell.
+TODO:
+
+    * Toy implementation, not finished.  Unless you're a developer interested in this, you probably shouldn't use it.
+    * Minor code cleanup
+    * Finish CLI
+    * AWS code may (?) have eventual consistency errors or instance state related buglets.
+    * Ansible provisioner is very literal, should just be a shell provisioner
+    * Support standard EC2 credential profile files to allow shorter/easier entry
+    * Need to add the trivial "strider ssh" command too for quickly firing up a shell.
 
 GOT PLUGINS?
 ============
@@ -47,10 +50,10 @@ CLI Gameplan
 
 Assuming the Strider config in 'demo.py'
 
-python examples/demo.py --up
-# python examples/demo.py --provision
-# python examples/demo.py --list
-# python examples/demo.py --destroy
+    python examples/demo.py --up
+    python examples/demo.py --provision 
+    python examples/demo.py --list
+    python examples/demo.py --destroy
 
 This isn't quite there yet but is trivial to add.
 

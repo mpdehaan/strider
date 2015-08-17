@@ -12,11 +12,15 @@ my_instance = EC2(
     region                 = "us-east-1",
     access_key_id          = os.environ["AWS_ACCESS_KEY_ID"],
     secret_access_key      = os.environ["AWS_SECRET_ACCESS_KEY"],
-    session_token          = os.environ.get("AWS_SESSION_TOKEN"),
+    # security_token       = os.environ.get("AWS_SESSION_TOKEN"),
     user_data              = None,
     image_id               = "ami-a7e145cc", # Ubuntu 14.04 us-east1 EBS
     instance_type          = "m3.medium",
     key_name               = os.environ["AWS_KEYPAIR"],
+    # subnet_id            = "foo",
+    tags  = dict(
+      role = "foo-test"
+    ),
     security_groups        = [ os.environ["AWS_SECURITY_GROUP"] ],
     ssh = dict(
       public_ip        = True,
@@ -37,7 +41,7 @@ provisioner = AnsibleSSH(
         # TODO: only do this if not installed
         "sudo apt-get install ansible",
     ],
-    playbook_cmd    = "sudo ansible-playbook -i 'localhost,' -c local /home/ubuntu/deploy_root/ansible/test.yml"
+    playbook_cmd    = "sudo ansible-playbook -i 'localhost,' -c local /home/ubuntu/deploy_root/ansible/test.yml -v 2>&1"
 )
 
 instances = [ my_instance ]
