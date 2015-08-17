@@ -29,7 +29,7 @@ class EC2(object):
         self._connection = None
         if self.tags is None:
             self.tags = dict()
-            self.tags['Name'] = self.name
+        self.tags['Name'] = self.name
         # FIXME: more required argument checking
         if not self.security_groups:
             raise Exception("security_groups are required")
@@ -68,9 +68,13 @@ class EC2(object):
         reservations = conn.get_all_instances(instance_ids=None, filters=None, dry_run=False, max_results=None)
         for reservation in reservations:
             for instance in reservation.instances:
-                if "Name" in instance.tags and instance.tags["Name"] == self.name and instance.state not in [ 'terminating', 'terminated', 'pending', 'shutting-down' ]:
-                    log("EC2: found instance: %s" % instance.id)
-                    return instance
+                  
+                if "Name" in instance.tags and instance.tags["Name"] == self.name:
+                    if instance.state not in [ 'terminating', 'terminated', 'pending', 'shutting-down' ]:
+                        log("EC2: found instance: %s" % instance.id)
+                        return instance
+                    else:
+                        log("EC2: found instance, but state is: %s" % instance.state)
         return None
 
     def _wait_for_instances(self, instance_ids):
@@ -88,6 +92,7 @@ class EC2(object):
         """ internal: assign a name to the instances """
         log("EC2: tagging instance")
         conn = self.connect()
+        log("EC2: tags=%s" % self.tags)
         for instance in reservation.instances:
             conn.create_tags([instance.id], self.tags)
         log("EC2: tagging complete")
@@ -156,7 +161,7 @@ class EC2(object):
 
         me = self._details()
         if me is None:
-            raise Exception("EC2: can't find instance ... eventual consistency hell?")
+            raise Exception("EC2: can't find instance ... this may happen when you have a stale instance tagged and the new instance failed to tag. Terminate the new instance and re-run the program.")
 
         log("EC2: waiting on SSH ...")
         (identity, user, host, port) = self._get_ssh_connection(me)
