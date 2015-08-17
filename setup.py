@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(name='strider',
       version="0.0.1",
-      description='development VM control',
+      description='Strider is a python dev/test VM workflow tool, similar to Vagrant',
       author='Michael DeHaan',
       author_email='michael.dehaan@gmail.com',
       url='http://github.com/mpdehaan/strider/',

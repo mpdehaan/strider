@@ -5,57 +5,48 @@ Strider is a minimal development tool for testing code against virtual machines.
 
 Basically it's a Python program that consumes something that looks a lot like a Vagrantfile.
 
-I'm not building this for people to use it, but rather to try some things out.  
-
-The end goal is more to provide a playground environment to do more things with AWS, as yet to be determined.  
-Right now it doesn't do a lot that you couldn't do with awscli + ssh + rsync, but if you're just looking for
-a Ansible + AWS Vagrant-alike thing, it does most of that already.
+Strider is brought to you by the guy who wrote Cobbler and Ansible (Michael DeHaan), and is named after Robert Plant's dog.
 
 STATUS
 ======
 
-EARLY
+Alpha. Functional for AWS + Ansible together, but may have some small bugs here and there.
 
 TODO:
 
-    * Toy implementation, not finished.  Unless you're a developer interested in this, you probably shouldn't use it.
     * Minor code cleanup
-    * Finish CLI
     * AWS code may (?) have eventual consistency errors or instance state related buglets.
-    * Ansible provisioner is very literal, should just be a shell provisioner
     * Support standard EC2 credential profile files to allow shorter/easier entry
-    * Need to add the trivial "strider ssh" command too for quickly firing up a shell.
+    * Need to add the trivial "strider ssh" command too for quickly firing up a shell, since we know how
+    * Improve Error Handling
+    * MOAR PLUGINS
 
 GOT PLUGINS?
 ============
 
 Strider is being developed for Ansible and AWS first, but other Virt plugins and Provisioners are SUPER welcome as long as the underlying
 tool doesn't suck and the code is clean.  For instance, Google Compute Engine, Virtual Box, Puppet, Chef, etc, are all fair game.
-We're almost ready, but not quite.
+We're almost ready, but not quite.  Pending a little refactoring first.  I'll let you know.
 
 USAGE
 =====
 
-pip install boto
-then take a look at example.py
-run it
+    pip install strider
+    vim striderfile.py # refer to the example in this project
+    python striderfile.py [--up|--provision|--destroy]
+    # or just use the API in strider/__init__.py
+    echo "STRIDER!!!"
 
-Community
-=========
+You will note that unlike Vagrant with Vagrantfiles, there is no binary named strider and no magic filenames.  
+Your code is the entry point and can be named anything.  
 
-It's way early yet, but see CONTRIBUTING.md.
+WHY
+===
 
-CLI Gameplan
-============
+Originally I wanted a rsync+ansible Vagrant workflow tool that was easy to tweak and this was an easy thing to do to get it.
+I also figured I'd want to do more with AWS over time and grow things in different directions.
 
-Assuming the Strider config in 'demo.py'
-
-    python examples/demo.py --up
-    python examples/demo.py --provision 
-    python examples/demo.py --list
-    python examples/demo.py --destroy
-
-This isn't quite there yet but is trivial to add.
+Plus, it was a bit of a tech demo about how easy it was to do.  There's not much code anywhere.
 
 License
 =======
