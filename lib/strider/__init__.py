@@ -1,6 +1,8 @@
 # (C) Michael DeHaan, 2015, michael.dehaan@gmail.copy_from
 # LICENSE: APACHE 2
 
+import argparse
+
 class Strider(object):
 
     __SLOTS__ = [ 'provisioner']
@@ -17,3 +19,20 @@ class Strider(object):
 
     def destroy(self, instances):
         return [ self.destroy(x) for x in instances ]
+
+    def cli(self, instances):
+        parser = argparse.ArgumentParser(description="Dev VM Manager, expects one of the following flags:")
+        parser.add_argument("--up", action="store_true", help="launch VMs")
+        parser.add_argument("--provision", action="store_true", help="reconfigure VMs")
+        parser.add_argument("--destroy", action="store_true", help="destroy VMs")
+        args = parser.parse_args()
+ 
+        if args.up:
+            self.up(instances)
+        elif args.provision:
+            self.provision(instances)
+        elif args.destroy:
+            self.destroy(instances)
+        else:
+            parser.print_help()
+            

@@ -12,7 +12,7 @@ my_instance = EC2(
     region                    = "us-east-1",
     access_key_id             = os.environ["AWS_ACCESS_KEY_ID"],
     secret_access_key         = os.environ["AWS_SECRET_ACCESS_KEY"],
-    instance_profile_name     = "default",
+    # instance_profile_name     = "default",
     # security_token          = os.environ.get("AWS_SESSION_TOKEN"),
     user_data                 = None,
     image_id                  = "ami-a7e145cc", # Ubuntu 14.04 us-east1 EBS
@@ -46,8 +46,10 @@ provisioner = Shell(
 instances = [ my_instance ]
 strider = Strider(provisioner=provisioner)
 
+strider.cli(instances)
+
 # EITHER OF THESE ARE IMPLEMENTED!
-strider.up(instances)
+# strider.up(instances)
 # strider.provision(instances)
 
 # TODO:
