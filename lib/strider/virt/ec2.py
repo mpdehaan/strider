@@ -119,6 +119,8 @@ class EC2(object):
             time.sleep(10)
         log("EC2: SSH ready")
         s.close()
+        # socket start isn't enough for SSH-ready sometimes
+        time.sleep(10)
 
     def _start_instances(self, reservation):
         log("EC2: starting instance")
