@@ -12,7 +12,7 @@ my_instance = EC2(
     region                    = "us-east-1",
     access_key_id             = os.environ["AWS_ACCESS_KEY_ID"],
     secret_access_key         = os.environ["AWS_SECRET_ACCESS_KEY"],
-    # instance_profile_name     = "default",
+    # instance_profile_name   = "default",
     # security_token          = os.environ.get("AWS_SESSION_TOKEN"),
     user_data                 = None,
     image_id                  = "ami-a7e145cc", # Ubuntu 14.04 us-east1 EBS
@@ -30,12 +30,9 @@ my_instance = EC2(
     )
 )
 
-# TODO: this is really just a shell provisioner, I plan to make this simpler and more generic.
-# and AnsibleSSH should be able to inherit from it.
-
 provisioner = Shell(
-    copy_from       = "./examples/ansible",
-    copy_to         = "/home/ubuntu/deploy_root/",
+    copy_from  = "./examples/ansible",
+    copy_to    = "/home/ubuntu/deploy_root/",
     commands   = [
         "sudo apt-get update",
         "sudo apt-get install ansible",
@@ -45,15 +42,5 @@ provisioner = Shell(
 
 instances = [ my_instance ]
 strider = Strider(provisioner=provisioner)
-
 strider.cli(instances)
 
-# EITHER OF THESE ARE IMPLEMENTED!
-# strider.up(instances)
-# strider.provision(instances)
-
-# TODO:
-#strider.list(instances)
-#strider.destroy(instances)
-
-#strider.cli()
