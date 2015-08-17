@@ -4,7 +4,7 @@
 
 from strider import Strider
 from strider.virt.ec2 import EC2
-from strider.provisioners.ansible_ssh import AnsibleSSH
+from strider.provisioners.shell import Shell
 import os
 
 my_instance = EC2(
@@ -33,16 +33,14 @@ my_instance = EC2(
 # TODO: this is really just a shell provisioner, I plan to make this simpler and more generic.
 # and AnsibleSSH should be able to inherit from it.
 
-provisioner = AnsibleSSH(
+provisioner = Shell(
     copy_from       = "./examples/ansible",
     copy_to         = "/home/ubuntu/deploy_root/",
-    prep_cmds       = [
-        # TODO: only do this if not recently updated
+    commands   = [
         "sudo apt-get update",
-        # TODO: only do this if not installed
         "sudo apt-get install ansible",
-    ],
-    playbook_cmd    = "sudo ansible-playbook -i 'localhost,' -c local /home/ubuntu/deploy_root/ansible/test.yml -v 2>&1"
+        "sudo ansible-playbook -i 'localhost,' -c local /home/ubuntu/deploy_root/ansible/test.yml -v 2>&1"
+    ]
 )
 
 instances = [ my_instance ]
