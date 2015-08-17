@@ -29,7 +29,7 @@ There is no binary. Running the "striderfile" replaces running commands like "va
 
 A failure will not remove your VMs.  Take care to watch the AWS console if you don't want to leave a failed deploy running.
 
-There are many SIGNIFICANTLY less provisioners and virtualization targets at this point.  
+There are many SIGNIFICANTLY less provisioners and virtualization targets at this point (just AWS for virt and the "Shell" provisioner, which can be used to run most anything, including Ansible).
 
 Status
 ======
