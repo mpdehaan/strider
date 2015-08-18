@@ -19,6 +19,7 @@ my_instance = EC2(
     instance_type             = "m3.medium",
     key_name                  = os.environ["AWS_KEYPAIR"],
     # subnet_id               = "foo",
+    # user_data               = open("user-data.sh").read(),
     tags  = dict(
       role = "foo-test"
     ),
