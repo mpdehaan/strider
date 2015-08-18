@@ -57,7 +57,7 @@ Usage
 =====
 
     vim striderfile.py # refer to the example in this project
-    python striderfile.py [--up|--provision|--destroy]
+    python striderfile.py [--up|--provision|--ssh|--destroy]
     # or just use the API in strider/__init__.py
     echo "STRIDER!!!"
 

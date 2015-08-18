@@ -11,6 +11,12 @@ class Shell(object):
     def __init__(self, **kwargs):
         for (x,y) in kwargs.iteritems():
             setattr(self, x, y)
+   
+    # TODO: move into base class of Shell provisioner 
+    def ssh(self, instance_data):
+        (keyfile, user, host, port) = instance_data['ssh']
+        ssh_basic = "ssh -i %s %s@%s -p %s " % (keyfile, user, host, port)
+        return os.system(ssh_basic)
 
     def converge(self, instance_data):
 
