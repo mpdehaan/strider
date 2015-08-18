@@ -27,7 +27,7 @@ class Shell(object):
 
         # FIXME: don't ignore port
         rsync_cmd = "rsync -avze 'ssh -i %s' %s %s@%s:%s" % (keyfile, self.copy_from, user, host, self.copy_to)
-        log("ANSIBLE: %s" % rsync_cmd)
+        log("SHELL: %s" % rsync_cmd)
         rc = os.system(rsync_cmd)
         if not rc == 0:
             log("rsync failed, rc: %s" % rc)
@@ -37,7 +37,7 @@ class Shell(object):
         
         for pc in self.commands:
             prep_cmd = ssh_basic + " %s" % pc
-            log("ANSIBLE: %s" % prep_cmd)
+            log("SHELL: %s" % prep_cmd)
             rc = os.system(prep_cmd)
             if not rc == 0:
                 log("prep cmd failed, rc: %s" % rc)
