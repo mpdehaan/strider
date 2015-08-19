@@ -8,7 +8,7 @@ from strider.provisioners.shell import Shell
 import os
 
 my_instance = EC2(
-    name                      = "strider-test-3",
+    name                      = "%s-strider-test-3" % os.environ["USER"],
     region                    = "us-east-1",
     access_key_id             = os.environ["AWS_ACCESS_KEY_ID"],
     secret_access_key         = os.environ["AWS_SECRET_ACCESS_KEY"],
@@ -20,6 +20,10 @@ my_instance = EC2(
     key_name                  = os.environ["AWS_KEYPAIR"],
     # subnet_id               = "foo",
     # user_data               = open("user-data.sh").read(),
+    # block_device_map        = {
+    #    '/dev/sdx' : dict(size=10),
+    #    '/dev/sdy' : dict(snapshot_id='snap-12345678', size=10),
+    # },
     tags  = dict(
       role = "foo-test"
     ),

@@ -5,6 +5,7 @@ HAS_BOTO = False
 try:
     import boto
     import boto.ec2
+    import boto.ec2.blockdevicemapping
     HAS_BOTO = True
 except ImportError:
     pass
@@ -17,7 +18,8 @@ class EC2(object):
 
     __SLOTS__ = [ 'name', 'region', 'access_key_id', 'secret_access_key', 'security_token',
                   'image_id', 'instance_type', 'key_name', 'security_groups', 'subnet_id',
-                  'ssh', 'user_data', 'tags', 'instance_profile_name', "_connection" ]
+                  'ssh', 'user_data', 'tags', 'instance_profile_name', 
+                  'block_device_map', "_connection" ]
 
     def __init__(self, **kwargs):
         if not HAS_BOTO:
@@ -132,6 +134,23 @@ class EC2(object):
         self._wait_for_instances(instance_ids)
         log("EC2: instance has started")
 
+    def _transform_block_device_map(self):
+         # make boto API device format a little more friendly
+         if self.block_device_map is None:
+             return None 
+         bdm = boto.ec2.blockdevicemapping.BlockDeviceMapping()
+         for (k,v) in self.block_device_map.iteritems():
+             log("EBS: device %s" % k)
+             bdm[k] = boto.ec2.blockdevicemapping.EBSBlockDeviceType()
+             bdm[k].size = v['size']
+             for prop in [ 'ephemeral_name', 'no_device', 'volume_id',
+                'snapshot_id', 'status', 'attach_time', 'delete_on_termination',
+                'size', 'volume_type', 'iops', 'encrypted' ]:
+                if prop in v:
+                   log("EBS property: %s => %s" % (prop, v[prop]))
+                   setattr(bdm[k], prop, v[prop])
+         return bdm
+
     def up(self):
 
         log("EC2: determining if we need to create an instance")
@@ -152,7 +171,8 @@ class EC2(object):
                 subnet_id = self.subnet_id,
                 instance_type = self.instance_type,
                 instance_profile_name = self.instance_profile_name,
-                security_group_ids = self.security_groups
+                security_group_ids = self.security_groups,
+                block_device_map = self._transform_block_device_map()
             )
             log("EC2: instance created")
             self._tag_instances(reservation)
