@@ -1,50 +1,14 @@
 STRIDER!!!
 ==========
 
-Strider is a minimal development tool for testing code against virtual machines.  
+Strider is a minimal program that both helps *test* development environments and *bakes* cloud images.  
 
-Basically it's a Python program that consumes something that looks a lot like a Vagrantfile.
+You may think of it as Vagrant+Packer, combined in a single tool that reads from a common configuration.
+Your development configurations and production provisioning configurations will not drift if you use this tool!
 
-When run, it spins up VMs if they don't already exist, and can configure them ad nauseum, and also destroy them.
+Strider is written in Python, and uses a single Python file as a description of the development and build environment.
 
 Strider is brought to you by the guy who wrote Cobbler and Ansible (Michael DeHaan), and is named after Robert Plant's dog.
-
-Why?
-====
-
-Originally I wanted a LOCAL (non-SSH-ing) rsync+ansible Vagrant-like workflow tool that was easy to tweak and this was an easy thing to do to get it without modifying Vagrant.  I also figured I'd want to do more with AWS over time and grow things in different directions.  Once I got going, I decided there wasn't much to it, so I kept going.  
-
-The result is a provisioner that works a bit more like Packer does, and runs a little faster, and a codebase that is a little
-easier to tweak (for me, being a Python fan).
-
-Right now it works better for me, at least, for the AWS + Ansible use case than the stock Vagrant ansible provisioner.
-It may also fit your needs.
-
-Major Vagrant differences
-=========================
-
-The application is written in Python.
-
-There is no binary. Running the "striderfile" replaces running commands like "vagrant up".
-
-There are SIGNIFICANTLY less provisioners and virtualization targets at this point (just AWS for virt and the "Shell" provisioner, which can be used to run most anything, including Ansible).
-
-Status
-======
-
-Alpha. Functional for AWS + Ansible together, but may have some small bugs here and there.  TODOs:
-
-    * IMMEDIATELY NEXT: Need to add the trivial "strider --ssh" command too for quickly firing up a shell, since we know how
-    * Minor code cleanup
-    * AWS code may have some small buglets.  But I don't know of any at the moment.  Let me know!
-    * Support standard EC2 credential profile files to allow shorter/easier entry
-    * Improve Error Handling
-    * MOAR PLUGINS
-
-Got Plugins?
-============
-
-Strider is being developed for Ansible and AWS first, but other Virt plugins and Provisioners are SUPER welcome as long as the underlying tool doesn't suck and the code is clean.  For instance, Google Compute Engine, Virtual Box, Puppet, Chef, etc, are all fair game. We're almost ready, but not quite.  Pending a little refactoring first.  I'll let you know.
 
 Installation
 ============
@@ -54,10 +18,39 @@ Installation
 Usage
 =====
 
-    vim striderfile.py # refer to the example in this project
-    python striderfile.py [--up|--provision|--ssh|--destroy]
-    # or just use the API in strider/__init__.py
-    echo "STRIDER!!!"
+    # configure your setup and check this into your repo root
+    vim striderfile.py
+
+    # spin up new VMs and configure them
+    python striderfile.py --up
+
+    # make some changes and apply them without booting a new instance
+    python striderfile.py --provision
+
+    # log into a VM
+    python striderfile.py --ssh
+
+    # bake a cloud image and show the ID
+    python striderfile.py --bake
+
+    # tear down the instances
+    python striderfile.py --destroy
+
+TODO List
+=========
+
+    * prebake provisioners - a good place to put steps like cleaning up the history prior to AMI bake
+    * postbake provisioners - you've paid for an hour, now do something useful with it
+    * minor code cleanup
+    * also support reading credentials from a Boto profile
+    * MOAR PLUGINS
+    * output AMI build info to a JSON file
+    * AMI tagging (different tag list than instance)
+
+Got Plugins?
+============
+
+Strider is being developed for Ansible and AWS first, but other Virt plugins and Provisioners are SUPER welcome as long as the underlying tool doesn't suck and the code is clean.  For instance, Google Compute Engine, Virtual Box, Puppet, Chef, etc, are all fair game. We're almost ready, but not quite.  Pending a little refactoring first.  I'll let you know.
 
 Again, you will note that unlike Vagrant with Vagrantfiles, there is no binary named strider and no magic filenames. Your code is the entry point and can be named anything.  
 
