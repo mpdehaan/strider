@@ -42,9 +42,10 @@ TODO List
     * prebake provisioners - a good place to put steps like cleaning up the history prior to AMI bake
     * postbake provisioners - you've paid for an hour, now do something useful with it
     * minor code cleanup
+    * --auto-destroy to automatically clean up after a successful bake
     * also support reading credentials from a Boto profile
     * MOAR PLUGINS
-    * output AMI build info to a JSON file
+    * --bake-results-file to output AMI build info to a JSON file in addition to stdout logging
     * AMI tagging (different tag list than instance)
 
 Got Plugins?
