@@ -1,4 +1,4 @@
-# (C) Michael DeHaan, 2015, michael.dehaan@gmail.copy_from
+# (C) Michael DeHaan, 2015, michael.dehaan@gmail.com
 # LICENSE: APACHE 2
 
 HAS_BOTO = False
