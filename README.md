@@ -3,10 +3,7 @@ STRIDER!!!
 
 Strider is a minimal program that both helps *test* development environments and *bakes* cloud images.  
 
-You may think of it as Vagrant+Packer, combined in a single tool that reads from a common configuration.
-Your development configurations and production provisioning configurations will not drift if you use this tool!
-
-Strider is written in Python, and uses a single Python file as a description of the development and build environment.
+You may think of it as Vagrant+Packer in one, reading from one config file.
 
 Strider is brought to you by the guy who wrote Cobbler and Ansible (Michael DeHaan), and is named after Robert Plant's dog.
 
@@ -31,7 +28,7 @@ Usage
     python striderfile.py --ssh
 
     # bake a cloud image and show the ID
-    python striderfile.py --bake
+    python striderfile.py --bake [--auto-teardown]
 
     # tear down the instances
     python striderfile.py --destroy
@@ -39,13 +36,10 @@ Usage
 TODO List
 =========
 
-    * prebake provisioners - a good place to put steps like cleaning up the history prior to AMI bake
-    * postbake provisioners - you've paid for an hour, now do something useful with it
     * minor code cleanup
-    * --auto-destroy to automatically clean up after a successful bake
     * also support reading credentials from a Boto profile
     * MOAR PLUGINS
-    * --bake-results-file to output AMI build info to a JSON file in addition to stdout logging
+    * --bake-results to output AMI build info to a JSON file in addition to stdout logging
     * AMI tagging (different tag list than instance)
 
 Got Plugins?
