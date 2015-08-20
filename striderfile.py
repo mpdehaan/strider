@@ -68,8 +68,8 @@ provisioner = Shell(
 
     # run these on commands on the instance
     commands   = [
-        "sudo apt-get update",
-        "sudo apt-get install ansible",
+        "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y",
+        "sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ansible",
         "sudo ansible-playbook -i 'localhost,' -c local /home/ubuntu/deploy_root/ansible/test.yml -v 2>&1"
     ]
 
