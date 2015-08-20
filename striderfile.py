@@ -5,6 +5,7 @@
 from strider import Strider
 from strider.virt.ec2 import EC2
 from strider.provisioners.shell import Shell
+import time
 import os
 
 # ====================================================
@@ -19,7 +20,7 @@ my_instance = EC2(
     instance_type             = "m3.medium",
 
     # only used if baking AMIs (--bake)
-    bake_name                 = "strider-produced-ami",
+    bake_name                 = "strider-produced-ami-%d" % int(time.time()),
     bake_description          = "AMI description goes here version 1.00",
 
     # security access info.  Can supply a security token if using one.  
@@ -75,10 +76,24 @@ provisioner = Shell(
 
 )
 
+# optional steps to run prior to --bake commands that will only run with --bake
+pre_bake = Shell(
+    commands = [
+        "sync"
+    ]
+)
+
+# optional commands to run after successful bake jobs to use remaining compute time
+post_bake = Shell(
+    commands = [
+        "echo 'post bake steps!'"
+    ]
+)
+
 # ====================================================
 # go!
 
 instances = [ my_instance ]
-strider = Strider(provisioner=provisioner)
+strider = Strider(provisioner=provisioner, pre_bake=pre_bake, post_bake=post_bake)
 strider.cli(instances)
 

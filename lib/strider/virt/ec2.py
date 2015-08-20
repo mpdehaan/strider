@@ -19,7 +19,7 @@ class EC2(object):
     __SLOTS__ = [ 'name', 'region', 'access_key_id', 'secret_access_key', 'security_token',
                   'image_id', 'instance_type', 'key_name', 'security_groups', 'subnet_id',
                   'ssh', 'user_data', 'tags', 'instance_profile_name', 
-                  'block_device_map', "_connection", 'bake_name', 'bake_description', '_reservation' ]
+                  'block_device_map', "_connection", 'bake_name', 'bake_description', '_instance_id' ]
 
     def __init__(self, **kwargs):
         if not HAS_BOTO:
@@ -103,11 +103,10 @@ class EC2(object):
         """ internal: code to create AMIs from running instances """
         log("EC2: baking AMI")
         conn = self.connect()
-        for instance in self._reservation.instances:
-            ami_id = conn.create_image(instance.id, self.bake_name, self.bake_description, 
-                no_reboot=True, block_device_mapping=self._transform_block_device_map())
-            log("EC2: baked AMI ID: %s" % ami_id)
-            return ami_id 
+        ami_id = conn.create_image(self._instance_id, self.bake_name, self.bake_description, 
+            no_reboot=True, block_device_mapping=self._transform_block_device_map())
+        log("EC2: baked AMI ID: %s" % ami_id)
+        return ami_id 
 
     def _get_ssh_connection(self, instance):
         username = self.ssh['username']
@@ -187,10 +186,11 @@ class EC2(object):
             log("EC2: instance created")
             self._tag_instances(reservation)
             self._start_instances(reservation)
-            self._reservation = reservation
+            self._instance_id = reservation.instances[0].id
         else:
             log("EC2: instance already exists, starting if needed")
             conn.start_instances([me.id])
+            self._instance_id = me.id
 
         me = self._details()
         if me is None:
