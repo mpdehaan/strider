@@ -27,9 +27,7 @@ The application is written in Python.
 
 There is no binary. Running the "striderfile" replaces running commands like "vagrant up".
 
-A failure will not remove your VMs.  Take care to watch the AWS console if you don't want to leave a failed deploy running.
-
-There are many SIGNIFICANTLY less provisioners and virtualization targets at this point (just AWS for virt and the "Shell" provisioner, which can be used to run most anything, including Ansible).
+There are SIGNIFICANTLY less provisioners and virtualization targets at this point (just AWS for virt and the "Shell" provisioner, which can be used to run most anything, including Ansible).
 
 Status
 ======
