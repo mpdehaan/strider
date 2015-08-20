@@ -75,7 +75,7 @@ class Strider(object):
  
         if args.bake:
             self.bake(instances, auto_teardown=args.auto_teardown)
-        if args.up:
+        elif args.up:
             self.up(instances)
         elif args.provision:
             self.provision(instances)
