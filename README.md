@@ -47,8 +47,6 @@ Got Plugins?
 
 Strider is being developed for Ansible and AWS first, but other Virt plugins and Provisioners are SUPER welcome as long as the underlying tool doesn't suck and the code is clean.  For instance, Google Compute Engine, Virtual Box, Puppet, Chef, etc, are all fair game. We're almost ready, but not quite.  Pending a little refactoring first.  I'll let you know.
 
-Again, you will note that unlike Vagrant with Vagrantfiles, there is no binary named strider and no magic filenames. Your code is the entry point and can be named anything.  
-
 License
 =======
 
