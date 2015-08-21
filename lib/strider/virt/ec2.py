@@ -19,7 +19,8 @@ class EC2(object):
     __SLOTS__ = [ 'name', 'region', 'access_key_id', 'secret_access_key', 'security_token',
                   'image_id', 'instance_type', 'key_name', 'security_groups', 'subnet_id',
                   'ssh', 'user_data', 'tags', 'instance_profile_name', 
-                  'block_device_map', "_connection", 'bake_name', 'bake_description', '_instance_id' ]
+                  'block_device_map', "_connection", 'bake_name', 'bake_description', 'profile_name',
+                  '_instance_id' ]
 
     def __init__(self, **kwargs):
         if not HAS_BOTO:
@@ -49,7 +50,8 @@ class EC2(object):
             self.region,
             aws_access_key_id = self.access_key_id,
             aws_secret_access_key = self.secret_access_key,
-            security_token = self.security_token
+            security_token = self.security_token,
+            profile_name = self.profile_name
         )
         log("EC2: connected")
         return conn

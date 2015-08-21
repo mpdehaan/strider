@@ -25,9 +25,10 @@ my_instance = EC2(
 
     # security access info.  Can supply a security token if using one.  
     # TODO: SOON: make this grok BOTO profiles
-    access_key_id             = os.environ["AWS_ACCESS_KEY_ID"],
-    secret_access_key         = os.environ["AWS_SECRET_ACCESS_KEY"],
+    # access_key_id           = os.environ["AWS_ACCESS_KEY_ID"],
+    # secret_access_key       = os.environ["AWS_SECRET_ACCESS_KEY"],
     # security_token          = os.environ.get("AWS_SESSION_TOKEN"),
+    profile_name              = "dev" # use ~/.aws/credentials
 
     # which AWS key pair key to inject
     key_name                  = os.environ["AWS_KEYPAIR"],
