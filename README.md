@@ -3,9 +3,13 @@ STRIDER!!!
 
 Strider is a minimal program that both helps *test* development environments and *bakes* cloud images.  
 
-You may think of it as Vagrant+Packer in one, reading from one config file.
+You may think of it as Vagrant+Packer in one, reading from one config file vs two.  It also has some interesting ideas like post-bake provisioners, which run AFTER a bake is done, doing something useful with AWS cycles you've already paid for.  It is designed to evolve and will definitely grow over time to do more things, but wants to stay lightweight and minimalist, and fun to hack on.
 
 Strider is brought to you by the guy who wrote Cobbler and Ansible (Michael DeHaan), and is named after Robert Plant's dog.
+
+    Come on now well let me tell you, 
+    What you're missing, missing, 'round them brick walls. 
+    -- Bron-Y-Aur Stomp
 
 Installation
 ============
