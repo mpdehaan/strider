@@ -9,7 +9,7 @@ Strider is brought to you by the guy who wrote Cobbler and Ansible (Michael DeHa
 
     Come on now well let me tell you, 
     What you're missing, missing, 'round them brick walls. 
-    -- Bron-Y-Aur Stomp
+    -- Led Zeppelin, Bron-Y-Aur Stomp
 
 Installation
 ============
