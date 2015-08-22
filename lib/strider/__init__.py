@@ -18,49 +18,50 @@ class Strider(object):
     def up(self, instances):
         """ Spin up instances, destroying them on cloud error, and then configure them """
         failed = False
-        try:
-            [ x.up() for x in instances ]
-        except:
-            traceback.print_exc()
-            self.destroy(instances)
-            failed = True
-        else:
-            # TODO: flag to optionally destroy instances if this fails might be nice
-            return self.provision(instances)
-        if failed:
-            raise Exception("up failed")
+        for instance in instances:
+            try:
+                instance.up()
+            except:
+                failed=True
+                traceback.print_exc()
+                instance.destroy()
+            else:
+                self.provision([instance])
+            if failed:
+                raise Exception("up failed")
 
     def provision(self, instances):
         """ (Re)configure instances that are already spun up """
-        return [ self.provisioner.converge(x.describe()) for x in instances ]
+        for instance in instances:
+            instance_data = instance.describe()
+            self.provisioner.converge(instance_data)
 
     def destroy(self, instances):
         """ Terminate instances """
-        return [ x.destroy() for x in instances ]
+        for instance in instances:
+            instance.destroy()
 
     def ssh(self, instances):
         """ SSH into instance(s), one at a time """
-        return [ self.provisioner.ssh(x.describe()) for x in instances ]
+        for instance in instances:
+            instance_data = instance.describe()
+            self.provisioner.ssh(instance_data)
 
-    def _bake(self, instances):
-        """ Internal: Produce cloud images """
-        if self.pre_bake is not None:
-            [ self.pre_bake.converge(x.describe()) for x in instances ]
-        baked = [ x.bake() for x in instances ]
-        if self.post_bake is not None:
-            [ self.post_bake.converge(x.describe()) for x in instances ]
-        return baked
-    
+    # FIXME: auto_teardown should be a mode, not a boolean
     def bake(self, instances, auto_teardown=False):
         """ Internal: Produce cloud images """
-        self.up(instances)
-        result = []
-        try:
-            result = self._bake(instances)
-        finally:
-            if auto_teardown:
-                [ x.destroy() for x in instances ]
-        return result
+        for instance in instances:
+            self.up([instance])
+            try:
+                instance_data = instance.describe()
+                if self.pre_bake:
+                    self.pre_bake.converge(instance_data)
+                instance.bake()
+                if self.post_bake:
+                    self.post_bake.converge(instance_data)
+            finally:
+                if auto_teardown:
+                    instance.destroy()
 
     def cli(self, instances):
         """ Main CLI entry point """
@@ -72,7 +73,7 @@ class Strider(object):
         parser.add_argument("--bake", action="store_true", help="bake cloud images")
         parser.add_argument("--auto-teardown", action="store_true", help="used with --bake to automatically --destroy produced VMs")
         args = parser.parse_args()
- 
+
         if args.bake:
             self.bake(instances, auto_teardown=args.auto_teardown)
         elif args.up:
@@ -85,5 +86,3 @@ class Strider(object):
             self.destroy(instances)
         else:
             parser.print_help()
-            
-

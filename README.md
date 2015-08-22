@@ -7,8 +7,8 @@ You may think of it as Vagrant+Packer in one, reading from one config file vs tw
 
 Strider is brought to you by the guy who wrote Cobbler and Ansible (Michael DeHaan), and is named after Robert Plant's dog.
 
-    Come on now well let me tell you, 
-    What you're missing, missing, 'round them brick walls. 
+    Come on now well let me tell you,
+    What you're missing, missing, 'round them brick walls.
     -- Led Zeppelin, Bron-Y-Aur Stomp
 
 Installation

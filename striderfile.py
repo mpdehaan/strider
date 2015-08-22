@@ -23,12 +23,12 @@ my_instance = EC2(
     bake_name                 = "strider-produced-ami-%d" % int(time.time()),
     bake_description          = "AMI description goes here version 1.00",
 
-    # security access info.  Can supply a security token if using one.  
+    # security access info.  Can supply a security token if using one.
     # TODO: SOON: make this grok BOTO profiles
     # access_key_id           = os.environ["AWS_ACCESS_KEY_ID"],
     # secret_access_key       = os.environ["AWS_SECRET_ACCESS_KEY"],
     # security_token          = os.environ.get("AWS_SESSION_TOKEN"),
-    profile_name              = "dev" # use ~/.aws/credentials
+    profile_name              = "dev", # use ~/.aws/credentials
 
     # which AWS key pair key to inject
     key_name                  = os.environ["AWS_KEYPAIR"],
@@ -51,7 +51,7 @@ my_instance = EC2(
     # how to SSH into the instance
     # use the public IP or the private one, which user, what pem file path, etc
     ssh = dict(
-      public_ip               = True,  
+      public_ip               = True,
       username                = "ubuntu",
       private_key_path        =  os.environ.get("AWS_PEM_FILE")
     )
@@ -72,7 +72,7 @@ provisioner = Shell(
     commands   = [
         "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y",
         "sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ansible",
-        "sudo ansible-playbook -i 'localhost,' -c local /home/ubuntu/deploy_root/ansible/test.yml -v 2>&1"
+        "sudo PYTHONUNBUFFERED=1 ansible-playbook -i 'localhost,' -c local /home/ubuntu/deploy_root/ansible/test.yml -v 2>&1"
     ]
 
 )
@@ -97,4 +97,3 @@ post_bake = Shell(
 instances = [ my_instance ]
 strider = Strider(provisioner=provisioner, pre_bake=pre_bake, post_bake=post_bake)
 strider.cli(instances)
-
