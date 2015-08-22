@@ -46,13 +46,6 @@ Examples
 
     vim examples/AWS_ansible/striderfile.py
 
-TODO List
-=========
-
-    * MOAR PLUGINS
-    * --bake-results to output AMI build info to a JSON file in addition to stdout logging
-    * tag baked AMI images (allow a different tag list than the instance tags)
-
 Got Plugins?
 ============
 
