@@ -56,7 +56,7 @@ TODO List
 Got Plugins?
 ============
 
-Strider is/was developed for Ansible and AWS first, but other Virt plugins and Provisioners are SUPER welcome as long as the underlying tool is sufficiently notable and the code is clean.  For instance, Google Compute Engine, Virtual Box, VMWare, Puppet, Chef, etc, are all fair game. We're almost ready, but not quite.  Pending a little refactoring first.  I'll let you know.
+Strider is/was developed for Ansible and AWS first, but other Virt plugins and Provisioners are SUPER welcome as long as the underlying tool is sufficiently notable and the code is clean.  For instance, Google Compute Engine, Virtual Box, VMWare, Puppet, Chef, etc, are all fair game.  Send along a pull request!
 
 License
 =======
