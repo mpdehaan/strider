@@ -37,6 +37,11 @@ Usage
     # tear down the instances
     python striderfile.py --destroy
 
+Examples
+========
+
+    vim examples/AWS_ansible/striderfile.py
+
 TODO List
 =========
 

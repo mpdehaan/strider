@@ -65,6 +65,10 @@ class Strider(object):
 
     def cli(self, instances):
         """ Main CLI entry point """
+
+        if type(instances) != list:
+            instances = [ instances ]
+
         parser = argparse.ArgumentParser(description="Dev VM Manager, expects one of the following flags:")
         parser.add_argument("--up", action="store_true", help="launch VMs")
         parser.add_argument("--provision", action="store_true", help="reconfigure VMs")
