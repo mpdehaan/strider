@@ -19,6 +19,10 @@ import os
 import socket
 import time
 
+SSH_CANARY = "_ssh_availability_test_"
+SSH_RETRY = 10
+SSH_CONNECT_TIMEOUT = 10
+
 class Shell(object):
 
     def __init__(self, copy_from=None, copy_to=None, commands=None):
@@ -27,6 +31,7 @@ class Shell(object):
         self.copy_from = copy_from
         self.copy_to = copy_to
         self.commands = commands
+        self.waited = False
         if self.commands is None:
             self.commands = []
 
@@ -34,33 +39,39 @@ class Shell(object):
     # PROVISIONER PUBLIC API
     # --------------------------------------------------------------------------
 
-    # FIXME: reimplement by just calling SSH
-    def wait_for_ready(self, instance_data, extra_sleep=10):
+    def _wait_for_ready(self, instance_data):
+        """ wait for SSH availability """
+
+        if self.waited:
+            return True
 
         (host, port) = (instance_data.ssh.host, instance_data.ssh.port)
         self.log("checking for SSH availability on %s:%s" % (host, port))
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            s.connect((host, port))
-        except socket.error as e:
-            self.log("SSH not ready, waiting 10 seconds")
-            time.sleep(10)
-            self.log("SSH ready")
-            s.close()
-            # socket start isn't enough for SSH-ready sometimes
-            if extra_sleep:
-                time.sleep(extra_sleep)
+        while True:
+
+            cmd = self._build_ssh_cmd(
+                instance_data,
+                "echo %s" % SSH_CANARY,
+                connect_timeout=SSH_CONNECT_TIMEOUT)
+            output = invoke(cmd, check_output=True).strip()
+
+            if output.endswith(SSH_CANARY):
+                self.waited = True
+                return True
+
+            self.log("retrying SSH availability in %s seconds..." % SSH_RETRY)
+            time.sleep(SSH_RETRY)
 
     def ssh(self, instance_data):
         """ open a shell into a box """
 
-        self.wait_for_ready(instance_data, extra_sleep=0)
+        self._wait_for_ready(instance_data, extra_sleep=0)
         return invoke(self._build_ssh_cmd(instance_data,""))
 
     def converge(self, instance_data):
         """ rsync if needed, then run the shell commands """
 
-        self.wait_for_ready(instance_data)
+        self._wait_for_ready(instance_data)
         if self.copy_from:
             invoke(self._build_rsync_cmd(instance_data))
         for pc in self.commands:
@@ -73,13 +84,14 @@ class Shell(object):
     def _ssh_params(self, instance_data):
         """ builds common SSH params used by both normal commands and rsync """
 
-        return "-o Port=%s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" % instance_data.ssh.port
+        return "-o Port=%s -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" % instance_data.ssh.port
 
-    def _build_ssh_cmd(self, instance_data, what):
+    def _build_ssh_cmd(self, instance_data, what, connect_timeout=30):
         """ builds a shell command line """
 
-        base = "ssh %s -i %s %s@%s -p %s" % (
+        base = "ssh %s -o ConnectTimeout=%s -i %s %s@%s -p %s" % (
             self._ssh_params(instance_data),
+            connect_timeout,
             instance_data.ssh.keyfile,
             instance_data.ssh.user,
             instance_data.ssh.host,

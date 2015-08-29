@@ -13,12 +13,23 @@
 # limitations under the License.
 from strider.common.logger import get_logger
 import os
+import subprocess
 
-def invoke(cmd):
-    """ log a command, run it, fail if it fails """
+def invoke(cmd, check_rc=True, check_output=False):
+    """ log a command, run it, and (usually) fail if it fails """
     log = get_logger('SHELL')
     log(cmd)
-    rc = os.system(cmd)
-    if not rc == 0:
-        log("command failed, rc: %s" % rc)
-        raise Exception("boom")
+
+    if check_output:
+        try:
+            return subprocess.check_output(cmd, shell=True)
+        except subprocess.CalledProcessError:
+            return ""
+
+    else:
+        rc = os.system(cmd)
+        if check_rc and not rc == 0:
+            msg = "command failed, rc: %s" % rc
+            log(msg)
+            raise Exception(msg)
+        return rc

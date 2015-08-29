@@ -28,7 +28,7 @@ instance = EC2(
     ),
     bake_name                 = "strider-produced-ami-%d" % int(time.time()),
     bake_description          = "AMI description goes here version 1.00",
-    profile_name              = "dev" # from ~/.aws/credentials
+    profile_name              = "dev", # from ~/.aws/credentials
 
     # alternative access credentials:
     # access_key_id           = os.environ["AWS_ACCESS_KEY_ID"],
@@ -36,9 +36,9 @@ instance = EC2(
     # security_token          = os.environ.get("AWS_SESSION_TOKEN"),
 
     # other optional parameters:
-    # instance_profile_name   = "default",
+    user_data                 = open("userdata.sh").read(),
+    # instance_profile_name   = "default", # (IAM)
     # subnet_id               = "foo",
-    # user_data               = open("user-data.sh").read(),
     # block_device_map        = {
     #    '/dev/sdx' : dict(size=10),
     #    '/dev/sdy' : dict(snapshot_id='snap-12345678', size=10),
