@@ -55,7 +55,7 @@ provisioner = Shell(
 	# rsync on AWS free tier has been observed to be unreliable - protocol errors
 	# so if you see this, know why
 
-	dict(type='copy', copy_from="./deploy", copy_to="/home/ubuntu/deploy_root"),
+	dict(type='rsync', copy_from="./deploy", copy_to="/home/ubuntu/deploy_root"),
 
         "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y",
         "sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ansible",
