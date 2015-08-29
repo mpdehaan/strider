@@ -200,7 +200,7 @@ class Shell(object):
     def _build_rsync_cmd(self, instance_data, copy_from, copy_to):
         """ builds a remote copy command line """
 
-        return "rsync -avze 'ssh %s -i %s' %s %s@%s:%s" % (
+        return "rsync -avze 'ssh %s -i %s' --delete %s %s@%s:%s" % (
              self._ssh_params(instance_data),		
              instance_data.ssh.keyfile,		
              copy_from,		
