@@ -40,10 +40,11 @@ class Shell(object):
         if self.commands is None:
             self.commands = []
 
-        # copy_from/copy_to is just syntactic sugar
+        # backwards compatibility
         if self.copy_from and self.copy_to:
+            log("WARNING: copy_from and copy_to are deprecated, see the new example on github")
             self.commands.insert(0, dict(
-                type = "rsync",
+                type = "copy",
                 copy_from = self.copy_from,
                 copy_to = self.copy_to
             ))
@@ -59,7 +60,7 @@ class Shell(object):
         # class rather than reimplementing this method.  Then just override
         # converge
 
-        self._wait_for_ready(instance_data, extra_sleep=0)
+        self._wait_for_ready(instance_data)
         return invoke(self._build_ssh_cmd(instance_data,""))
 
     # --------------------------------------------------------------------------
@@ -82,7 +83,7 @@ class Shell(object):
 
         "echo foo"                           # SSH (shorthand)
         { type: "ssh", command: "echo foo"}  # also SSH
-        { type: "rsync", from: x, to: y }      # rsync over SSH
+        { type: "copy", from: x, to: y }     # scp
 
         """
 
@@ -95,13 +96,16 @@ class Shell(object):
                 instance_data, item.get('command', None)
             ))
 
-        elif what == 'rsync':
-            # wait for SSH and then launch an rsync
+        elif what == 'copy':
+            # wait for SSH and then launch an scp
+            copy_from = item['copy_from']
+            copy_to = item['copy_to']
             self._wait_for_ready(instance_data)
-            return invoke(self._build_rsync_cmd(
+            invoke(self._build_ssh_cmd(instance_data, "mkdir -p %s" % copy_to))
+            return invoke(self._build_copy_cmd(
                 instance_data,
-                copy_from = item.get('copy_from', None),
-                copy_to = item.get('copy_to',None)
+                copy_from = copy_from,
+                copy_to = copy_to
             ))
 
         # add any other operational types here (such as local command execution)
@@ -137,7 +141,7 @@ class Shell(object):
     # --------------------------------------------------------------------------
 
     def _ssh_params(self, instance_data):
-        """ builds common SSH params used by both normal commands and rsync """
+        """ builds common SSH params used by all operations"""
 
         return "-o Port=%s -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" % instance_data.ssh.port
 
@@ -163,16 +167,24 @@ class Shell(object):
 
     # --------------------------------------------------------------------------
 
-    def _build_rsync_cmd(self, instance_data, copy_from, copy_to):
-        """ builds a rsync command line """
+    def _build_copy_cmd(self, instance_data, copy_from, copy_to):
+        """ builds a remote copy command line """
+
+        # previously we used rsync here but I found it was unreliable
+        # on some AWS instances - even with particular userdata.  This will
+        # copy more data but will fail MUCH less, making it more reliable
+        # in build systems.  For CI, this is a non-issue.  Developers
+        # may wish to add a "use_rsync" flag.  Pull requests would be
+        # welcome.
 
         assert instance_data is not None
         assert copy_from is not None
         assert copy_to is not None
 
-        return "rsync -avze 'ssh %s -i %s' %s %s@%s:%s" % (
+        return "scp -r %s -i %s -P %s %s %s@%s:%s" % (
             self._ssh_params(instance_data),
             instance_data.ssh.keyfile,
+            instance_data.ssh.port,
             copy_from,
             instance_data.ssh.user,
             instance_data.ssh.host,

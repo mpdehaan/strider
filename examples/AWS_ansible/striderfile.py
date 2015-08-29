@@ -49,9 +49,8 @@ instance = EC2(
 # The provisioner decides how the instance will be configured
 
 provisioner = Shell(
-    copy_from  = "./deploy",
-    copy_to    = "/home/ubuntu/deploy_root/",
-    commands   = [
+    commands = [
+        dict(type='copy', copy_from="./deploy", copy_to="/home/ubuntu/deploy_root"),
         "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y",
         "sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ansible",
         "sudo PYTHONUNBUFFERED=1 ansible-playbook -i 'localhost,' -c local /home/ubuntu/deploy_root/deploy/test.yml -v 2>&1"
