@@ -50,7 +50,13 @@ instance = EC2(
 
 provisioner = Shell(
     commands = [
-        dict(type='copy', copy_from="./deploy", copy_to="/home/ubuntu/deploy_root"),
+
+        # to select rsync, change 'copy' to 'rsync' below
+	# rsync on AWS free tier has been observed to be unreliable - protocol errors
+	# so if you see this, know why
+
+	dict(type='copy', copy_from="./deploy", copy_to="/home/ubuntu/deploy_root"),
+
         "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y",
         "sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ansible",
         "sudo PYTHONUNBUFFERED=1 ansible-playbook -i 'localhost,' -c local /home/ubuntu/deploy_root/deploy/test.yml -v 2>&1"

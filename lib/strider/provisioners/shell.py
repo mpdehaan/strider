@@ -96,17 +96,25 @@ class Shell(object):
                 instance_data, item.get('command', None)
             ))
 
-        elif what == 'copy':
+        elif what == 'copy' or what == 'rsync':
             # wait for SSH and then launch an scp
             copy_from = item['copy_from']
             copy_to = item['copy_to']
             self._wait_for_ready(instance_data)
-            invoke(self._build_ssh_cmd(instance_data, "mkdir -p %s" % copy_to))
-            return invoke(self._build_copy_cmd(
-                instance_data,
-                copy_from = copy_from,
-                copy_to = copy_to
-            ))
+	
+            if what == 'rsync':
+            	return invoke(self._build_rsync_cmd(
+                	instance_data,
+                	copy_from = copy_from,
+                	copy_to = copy_to
+            	))
+            elif what == 'copy':
+		invoke(self._build_ssh_cmd(instance_data, "mkdir -p %s" % copy_to))
+            	return invoke(self._build_copy_cmd(
+                	instance_data,
+                	copy_from = copy_from,
+                	copy_to = copy_to
+            	))
 
         # add any other operational types here (such as local command execution)
 
@@ -170,12 +178,8 @@ class Shell(object):
     def _build_copy_cmd(self, instance_data, copy_from, copy_to):
         """ builds a remote copy command line """
 
-        # previously we used rsync here but I found it was unreliable
-        # on some AWS instances - even with particular userdata.  This will
-        # copy more data but will fail MUCH less, making it more reliable
-        # in build systems.  For CI, this is a non-issue.  Developers
-        # may wish to add a "use_rsync" flag.  Pull requests would be
-        # welcome.
+	# scp is provided because rsync is sometimes unreliable
+	# on AWS free tier, even on large enough instance sizes
 
         assert instance_data is not None
         assert copy_from is not None
@@ -190,3 +194,18 @@ class Shell(object):
             instance_data.ssh.host,
             copy_to
         )
+
+   # --------------------------------------------------------------------------
+
+    def _build_rsync_cmd(self, instance_data, copy_from, copy_to):
+        """ builds a remote copy command line """
+
+        return "rsync -avze --delete 'ssh %s -i %s' %s %s@%s:%s" % (
+             self._ssh_params(instance_data),		
+             instance_data.ssh.keyfile,		
+             copy_from,		
+             instance_data.ssh.user,		
+             instance_data.ssh.host,		
+             copy_to
+        )
+
