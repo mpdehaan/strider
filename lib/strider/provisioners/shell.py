@@ -19,8 +19,8 @@ import os
 import socket
 import time
 
-SSH_CANARY = "_ssh_availability_test_"
-SSH_RETRY = 10
+SSH_CANARY = "_ssh_availability_test_"  # string used in SSH connectivity checks
+SSH_RETRY = 10                          # how long to wait per check iteration
 SSH_CONNECT_TIMEOUT = 10
 
 class Shell(object):
@@ -28,15 +28,87 @@ class Shell(object):
     def __init__(self, copy_from=None, copy_to=None, commands=None):
 
         self.log = strider.utils.logger.get_logger('SHELL')
+
         self.copy_from = copy_from
         self.copy_to = copy_to
+
         self.commands = commands
+
+        # track whether we've waited for SSH yet
         self.waited = False
+
         if self.commands is None:
             self.commands = []
 
+        # copy_from/copy_to is just syntactic sugar
+        if self.copy_from and self.copy_to:
+            self.commands.insert(0, dict(
+                type = "rsync",
+                copy_from = self.copy_from,
+                copy_to = self.copy_to
+            ))
+
     # --------------------------------------------------------------------------
     # PROVISIONER PUBLIC API
+    # --------------------------------------------------------------------------
+
+    def ssh(self, instance_data):
+        """ open a shell into a box """
+
+        # if writing a new provisioner, it may be helpful to subclass this
+        # class rather than reimplementing this method.  Then just override
+        # converge
+
+        self._wait_for_ready(instance_data, extra_sleep=0)
+        return invoke(self._build_ssh_cmd(instance_data,""))
+
+    # --------------------------------------------------------------------------
+
+    def converge(self, instance_data):
+        """ run all convergence operations in the commands list """
+
+        for item in self.commands:
+            if isinstance(item, basestring):
+                item = dict(type="ssh", command=item)
+            self._dispatch(instance_data, item)
+
+    # --------------------------------------------------------------------------
+    # PRIVATE FUNCTIONS
+    # --------------------------------------------------------------------------
+
+    def _dispatch(self, instance_data, item):
+        """
+        Handle an item in the commands array, examples:
+
+        "echo foo"                           # SSH (shorthand)
+        { type: "ssh", command: "echo foo"}  # also SSH
+        { type: "rsync", from: x, to: y }      # rsync over SSH
+
+        """
+
+        what = item.get('type', None)
+
+        if what == 'ssh':
+            # wait for SSH and then launch a command
+            self._wait_for_ready(instance_data)
+            return invoke(self._build_ssh_cmd(
+                instance_data, item.get('command', None)
+            ))
+
+        elif what == 'rsync':
+            # wait for SSH and then launch an rsync
+            self._wait_for_ready(instance_data)
+            return invoke(self._build_rsync_cmd(
+                instance_data,
+                copy_from = item.get('copy_from', None),
+                copy_to = item.get('copy_to',None)
+            ))
+
+        # add any other operational types here (such as local command execution)
+
+        else:
+            raise Exception("unknown type in commands list: %s, %s" % (item, what))
+
     # --------------------------------------------------------------------------
 
     def _wait_for_ready(self, instance_data):
@@ -62,23 +134,6 @@ class Shell(object):
             self.log("retrying SSH availability in %s seconds..." % SSH_RETRY)
             time.sleep(SSH_RETRY)
 
-    def ssh(self, instance_data):
-        """ open a shell into a box """
-
-        self._wait_for_ready(instance_data, extra_sleep=0)
-        return invoke(self._build_ssh_cmd(instance_data,""))
-
-    def converge(self, instance_data):
-        """ rsync if needed, then run the shell commands """
-
-        self._wait_for_ready(instance_data)
-        if self.copy_from:
-            invoke(self._build_rsync_cmd(instance_data))
-        for pc in self.commands:
-            invoke(self._build_ssh_cmd(instance_data, " %s" % pc))
-
-    # --------------------------------------------------------------------------
-    # PRIVATE FUNCTIONS
     # --------------------------------------------------------------------------
 
     def _ssh_params(self, instance_data):
@@ -86,8 +141,13 @@ class Shell(object):
 
         return "-o Port=%s -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" % instance_data.ssh.port
 
+    # --------------------------------------------------------------------------
+
     def _build_ssh_cmd(self, instance_data, what, connect_timeout=30):
         """ builds a shell command line """
+
+        assert instance_data is not None
+        assert what is not None
 
         base = "ssh %s -o ConnectTimeout=%s -i %s %s@%s -p %s" % (
             self._ssh_params(instance_data),
@@ -101,14 +161,20 @@ class Shell(object):
             return base
         return "%s %s" % (base, what)
 
-    def _build_rsync_cmd(self, instance_data):
+    # --------------------------------------------------------------------------
+
+    def _build_rsync_cmd(self, instance_data, copy_from, copy_to):
         """ builds a rsync command line """
+
+        assert instance_data is not None
+        assert copy_from is not None
+        assert copy_to is not None
 
         return "rsync -avze 'ssh %s -i %s' %s %s@%s:%s" % (
             self._ssh_params(instance_data),
             instance_data.ssh.keyfile,
-            self.copy_from,
+            copy_from,
             instance_data.ssh.user,
             instance_data.ssh.host,
-            self.copy_to
+            copy_to
         )
