@@ -9,9 +9,6 @@ Strider also has some interesting ideas like post-bake provisioners, which run *
 doing something useful with AWS cycles you've already paid for.  It is designed to evolve and will definitely grow over time,
 but wants to stay lightweight and minimalist, and fun to hack on.
 
-Decisions are made to optimize it for a reliable CI pipeline first, for instance, strider currently uses scp over rsync to avoid
-common client errors.
-
 Strider is brought to you by the guy who wrote Cobbler and Ansible (Michael DeHaan), and is named after Robert Plant's dog.
 
     Come on now well let me tell you,
