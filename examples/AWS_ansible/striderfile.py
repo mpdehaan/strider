@@ -51,7 +51,7 @@ instance = EC2(
 provisioner = Shell(
     commands = [
 
-        # to select rsync, change 'copy' to 'rsync' below
+	# you can deselect 'rsync' by changing to 'copy' below for the type parameter.
 	# rsync on AWS free tier has been observed to be unreliable - protocol errors
 	# so if you see this, know why
 
