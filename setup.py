@@ -7,7 +7,7 @@ import sys
 from setuptools import setup, find_packages
 
 setup(name='strider',
-      version="0.0.7",
+      version="0.0.8",
       description='Strider builds dev VMs and bakes cloud images.',
       author='Michael DeHaan',
       author_email='michael.dehaan@gmail.com',
