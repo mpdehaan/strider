@@ -18,6 +18,7 @@ from strider.common.instance_data import InstanceData
 import os
 import socket
 import time
+from jinja2 import Template
 
 SSH_CANARY = "_ssh_availability_test_"  # string used in SSH connectivity checks
 SSH_RETRY = 10                          # how long to wait per check iteration
@@ -115,6 +116,14 @@ class Shell(object):
                 	copy_from = copy_from,
                 	copy_to = copy_to
             	))
+        elif what == 'command':
+            command = item['command']
+            # wait for SSH and then launch an scp
+            self._wait_for_ready(instance_data)
+            return invoke(self._build_local_cmd(
+                instance_data,
+                command = command
+            ))
 
         # add any other operational types here (such as local command execution)
 
@@ -209,3 +218,19 @@ class Shell(object):
              copy_to
         )
 
+   # --------------------------------------------------------------------------
+
+    def _build_local_cmd(self, instance_data, command):
+        """ builds a local shell command line """
+
+        assert instance_data is not None
+
+        params = { 
+            'ssh_host': instance_data.ssh.host,
+            'ssh_keyfile': instance_data.ssh.keyfile,
+            'ssh_user': instance_data.ssh.user,
+            'ssh_port': instance_data.ssh.port
+        }
+
+        command = Template(command).render(**params)
+        return command
