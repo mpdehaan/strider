@@ -63,7 +63,9 @@ provisioner = Shell(
     ]
 )
 
-# Runs ansible as a command on your workstation instead of the provisioned instance.
+# Alternative: run ansible remotely from the build machine / workstation
+# (more SSH activity, but shares less information with the guest)
+
 # provisioner = Shell(
 #     commands = [
 #         dict(type='command', 
