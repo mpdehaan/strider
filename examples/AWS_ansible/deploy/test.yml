@@ -1,4 +1,5 @@
 ---
-- hosts: localhost
+- hosts: "{{target|default('localhost')}}"
+  become: yes
   tasks:
     - apt: name=tree state=installed

@@ -63,6 +63,15 @@ provisioner = Shell(
     ]
 )
 
+# Runs ansible as a command on your workstation instead of the provisioned instance.
+# provisioner = Shell(
+#     commands = [
+#         dict(type='command', 
+#              command='PYTHONUNBUFFERED=1 ansible-playbook -v -i {{ssh_host}}, -u {{ssh_user}} -e "target={{ssh_host}}" deploy/test.yml'),
+       
+#     ]
+# )
+
 # optional steps to run prior to --bake commands that will only run with --bake
 pre_bake = Shell(
     commands = [
