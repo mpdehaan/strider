@@ -1,3 +1,12 @@
+Migration
+=========
+
+The original version of this fork is no longer maintained, but this project continues.
+
+(I still like the idea, I just don't have a need to work on it)
+
+If you are interested in Strider, hop on over to https://github.com/jcftang/strider and send pull requests or tickets there instead.
+
 STRIDER!!!
 ==========
 
